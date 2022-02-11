@@ -58,6 +58,9 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         _isLoading = false;
       });
+      showSnackBar(context, res);
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const LoginScreen()));
     } else {
       setState(() {
         _isLoading = false;
@@ -180,8 +183,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const LoginScreen()));
+                      Navigator.of(context).pop();
                     },
                     child: Container(
                       child: const Text(
