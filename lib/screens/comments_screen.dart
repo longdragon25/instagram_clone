@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/user.dart';
 import 'package:instagram_clone/providers/user_provider.dart';
@@ -59,7 +60,27 @@ class _CommentsScreenState extends State<CommentsScreen> {
         title: const Text('Comments'),
         centerTitle: false,
       ),
-      body: CommentCard(),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('posts')
+            .doc(widget.postId)
+            .collection('comments')
+            .snapshots(),
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              return CommentCard(snap: snapshot.data!.docs[index]);
+            },
+          );
+        },
+      ),
       bottomNavigationBar: SafeArea(
         child: Container(
           height: kToolbarHeight,
@@ -69,9 +90,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://banner2.cleanpng.com/20180623/iqh/kisspng-computer-icons-avatar-social-media-blog-font-aweso-avatar-icon-5b2e99c40ce333.6524068515297806760528.jpg',
-                ),
+                backgroundImage: NetworkImage(user.photoUrl),
                 radius: 18,
               ),
               Expanded(
@@ -80,7 +99,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 child: TextField(
                   controller: commentEdittingController,
                   decoration: InputDecoration(
-                      hintText: 'Comments as....', border: InputBorder.none),
+                      hintText: 'Comments as ${user.username}',
+                      border: InputBorder.none),
                 ),
               )),
               InkWell(

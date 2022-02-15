@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CommentCard extends StatelessWidget {
-  const CommentCard({Key? key}) : super(key: key);
+  final snap;
+  const CommentCard({Key? key, required this.snap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +13,7 @@ class CommentCard extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(
-                  'https://banner2.cleanpng.com/20180623/iqh/kisspng-computer-icons-avatar-social-media-blog-font-aweso-avatar-icon-5b2e99c40ce333.6524068515297806760528.jpg'),
+              backgroundImage: NetworkImage(snap['profilePic']),
             ),
             Expanded(
                 child: Padding(
@@ -24,16 +25,16 @@ class CommentCard extends StatelessWidget {
                   RichText(
                       text: TextSpan(children: [
                     TextSpan(
-                        text: 'username',
+                        text: snap['name'],
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         )),
-                    TextSpan(text: 'comment content'),
+                    TextSpan(text: '  ${snap['text']}'),
                   ])),
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      '25/11/2000',
+                      DateFormat.yMMMd().format(snap['datePublished'].toDate()),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
