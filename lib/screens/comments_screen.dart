@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/user.dart';
 import 'package:instagram_clone/providers/user_provider.dart';
+import 'package:instagram_clone/resources/firestore_methods.dart';
 import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/comment_card.dart';
 import 'package:provider/provider.dart';
 
 class CommentsScreen extends StatefulWidget {
-  const CommentsScreen({Key? key}) : super(key: key);
+  final postId;
+  const CommentsScreen({Key? key, required this.postId}) : super(key: key);
 
   @override
   _CommentsScreenState createState() => _CommentsScreenState();
@@ -14,6 +17,30 @@ class CommentsScreen extends StatefulWidget {
 
 class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentEdittingController = TextEditingController();
+
+  void postComment(String uid, String name, String profilePic) async {
+    try {
+      String res = await FirestoreMethods().postComment(
+        widget.postId,
+        commentEdittingController.text,
+        uid,
+        name,
+        profilePic,
+      );
+
+      if (res != 'success') {
+        showSnackBar(context, res);
+      }
+      setState(() {
+        commentEdittingController.text = "";
+      });
+    } catch (err) {
+      showSnackBar(
+        context,
+        err.toString(),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -57,7 +84,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 ),
               )),
               InkWell(
-                onTap: () {},
+                onTap: () =>
+                    postComment(user.uid, user.username, user.photoUrl),
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
