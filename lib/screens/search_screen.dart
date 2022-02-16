@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:instagram_clone/screens/profile_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/global_variables.dart';
 import 'package:instagram_clone/widgets/text_field_input.dart';
@@ -45,26 +46,41 @@ class _SearchScreenState extends State<SearchScreen> {
                   .where('username', isGreaterThanOrEqualTo: _textSearch.text)
                   .get(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
-                return ListView.builder(
-                    itemCount: (snapshot.data! as dynamic).docs.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            (snapshot.data! as dynamic).docs[index]['photoUrl'],
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                      itemCount: (snapshot.data! as dynamic).docs.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ProfileScreen(
+                                    uid: (snapshot.data! as dynamic).docs[index]
+                                        ['uid'])));
+                          },
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                (snapshot.data! as dynamic).docs[index]
+                                    ['photoUrl'],
+                              ),
+                              radius: 16,
+                            ),
+                            title: Text(
+                              (snapshot.data! as dynamic).docs[index]
+                                  ['username'],
+                            ),
                           ),
-                          radius: 16,
-                        ),
-                        title: Text(
-                          (snapshot.data! as dynamic).docs[index]['username'],
-                        ),
-                      );
-                    });
+                        );
+                      });
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               },
             )
           : FutureBuilder(
