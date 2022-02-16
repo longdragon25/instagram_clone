@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/resources/auth_methods.dart';
+import 'package:instagram_clone/responsive/mobile_screen_layout.dart';
+import 'package:instagram_clone/responsive/responsive_layout_screen.dart';
+import 'package:instagram_clone/responsive/web_screen_layout.dart';
 import 'package:instagram_clone/screens/login_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utils.dart';
@@ -59,8 +62,15 @@ class _SignupScreenState extends State<SignupScreen> {
         _isLoading = false;
       });
       showSnackBar(context, res);
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => const LoginScreen()));
+      // navigate to the home screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+            mobileScreenLayout: MobileScreenLayout(),
+            webScreenLayout: WebScreenLayout(),
+          ),
+        ),
+      );
     } else {
       setState(() {
         _isLoading = false;
