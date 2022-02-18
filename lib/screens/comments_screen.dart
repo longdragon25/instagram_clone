@@ -107,9 +107,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
               InkWell(
                 onTap: () =>
                     postComment(user.uid, user.username, user.photoUrl),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Text(
                     'Post',
                     style: TextStyle(color: Colors.blue, fontSize: 16),

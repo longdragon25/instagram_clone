@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -82,6 +83,15 @@ class FirestoreMethods {
       res = err.toString();
     }
     return res;
+  }
+
+  Future<void> getPost() async {
+    try {
+      var postData = await FirebaseFirestore.instance.collection('posts').get();
+      log(postData.toString());
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   // Delete Post
