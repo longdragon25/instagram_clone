@@ -1,5 +1,12 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/screens/add_post_screen.dart';
+import 'package:instagram_clone/screens/feed_screen.dart';
+import 'package:instagram_clone/screens/profile_screen.dart';
+import 'package:instagram_clone/screens/search_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/global_variables.dart';
 // import 'package:instagram_clone/utils/global_variable.dart';
@@ -19,6 +26,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   void initState() {
     super.initState();
     pageController = PageController();
+    log('MobileScreenLayout');
   }
 
   @override
@@ -40,6 +48,15 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> homeScreenItems = [
+      FeedScreen(),
+      SearchScreen(),
+      AddPostScreen(),
+      Text('notif'),
+      ProfileScreen(
+        uid: FirebaseAuth.instance.currentUser!.uid,
+      ),
+    ];
     return Scaffold(
       body: PageView(
         children: homeScreenItems,

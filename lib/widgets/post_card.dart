@@ -270,7 +270,13 @@ class _PostCardState extends State<PostCard> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 4),
                     ),
-                    onTap: () {}),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => CommentsScreen(
+                                  postId: widget.snap['postId'])));
+                    }),
                 Container(
                   child: Text(
                     DateFormat.yMMMd()
