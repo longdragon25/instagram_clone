@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -46,6 +48,7 @@ class MyApp extends StatelessWidget {
             stream: FirebaseAuth.instance.userChanges(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
+                log('userInfo: ${snapshot.data.toString()}');
                 if (snapshot.hasData) {
                   return const ResponsiveLayout(
                     mobileScreenLayout: MobileScreenLayout(),
@@ -58,7 +61,7 @@ class MyApp extends StatelessWidget {
                 }
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(
                     color: primaryColor,
                   ),

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,7 +47,6 @@ class AuthMethods {
           followers: [],
           following: [],
         );
-
         // add user to database
         await _firestore
             .collection('users')
@@ -60,6 +60,7 @@ class AuthMethods {
       } else if (err.code == 'weak-password') {
         res = 'Your password should be at least 6 characters';
       }
+      res = err.toString();
     } catch (err) {
       res = err.toString();
     }
@@ -79,6 +80,8 @@ class AuthMethods {
           email: email,
           password: password,
         );
+        // await _auth.currentUser!.reload();
+
         res = "success";
       } else {
         res = "Please enter all the fields";

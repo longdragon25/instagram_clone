@@ -57,7 +57,7 @@ class _SignupScreenState extends State<SignupScreen> {
         username: _userNameEditingController.text,
         bio: _bioEditingController.text,
         file: _image!);
-    if (res == "success") {
+    if (res == "succes") {
       setState(() {
         _isLoading = false;
       });
