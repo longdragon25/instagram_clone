@@ -85,10 +85,19 @@ class FirestoreMethods {
     return res;
   }
 
-  Future<void> getPost() async {
+  Future<List<Post>?> getPost() async {
+    List<Post> _postList = [];
     try {
-      var postData = await FirebaseFirestore.instance.collection('posts').get();
-      log(postData.toString());
+      var postData = await FirebaseFirestore.instance
+          .collection('posts')
+          .orderBy('datePublished', descending: true)
+          .get();
+      var jsonList = postData.docs;
+      for (var json in jsonList) {
+        Post post = Post.fromSnap(json);
+        _postList.add(post);
+      }
+      return _postList;
     } catch (e) {
       print(e.toString());
     }

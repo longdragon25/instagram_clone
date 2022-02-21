@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/utils/colors.dart';
 
 class FavoriteCard extends StatelessWidget {
-  final snap;
-  const FavoriteCard({Key? key, required this.snap}) : super(key: key);
+  Post post;
+  FavoriteCard({Key? key, required this.post}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,31 +13,33 @@ class FavoriteCard extends StatelessWidget {
       child: Container(
         height: 100,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(snap['profImage']),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: snap['username'],
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: '  ${snap['description']}')
-                  ]),
-                ),
-              ],
+            Flexible(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(post.profImage),
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text('${post.username}',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Expanded(
+                    child: Text(
+                      '  ${post.description}',
+                    ),
+                  )
+                ],
+              ),
             ),
             Container(
               width: 100,
               height: 100,
               child: Image.network(
-                snap['postUrl'],
+                post.postUrl,
                 fit: BoxFit.cover,
               ),
             ),
