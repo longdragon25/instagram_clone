@@ -20,6 +20,19 @@ class _SearchScreenState extends State<SearchScreen> {
   TextEditingController _textSearch = TextEditingController();
   bool isShowUsers = false;
 
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   addData();
+  // }
+
+  // addData() async {
+  //   PostProvider _postProvider =
+  //       Provider.of<PostProvider>(context, listen: false);
+  //   await _postProvider.getPost();
+  // }
+
   @override
   void dispose() {
     // TODO: implement dispose

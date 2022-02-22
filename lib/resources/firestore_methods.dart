@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instagram_clone/models/comment.dart';
 import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/resources/storage_methods.dart';
 import 'package:uuid/uuid.dart';
@@ -62,19 +63,19 @@ class FirestoreMethods {
     try {
       if (text.isNotEmpty) {
         String commentId = const Uuid().v1();
+        Comment comment = Comment(
+            commentId: commentId,
+            datePublished: DateTime.now(),
+            name: name,
+            profilePic: profilePic,
+            text: text,
+            uid: uid);
         _firestore
             .collection('posts')
             .doc(postId)
             .collection('comments')
             .doc(commentId)
-            .set({
-          'profilePic': profilePic,
-          'name': name,
-          'uid': uid,
-          'text': text,
-          'commentId': commentId,
-          'datePublished': DateTime.now(),
-        });
+            .set(comment.toJson());
         res = 'success';
       } else {
         res = "Please enter text";
@@ -95,6 +96,17 @@ class FirestoreMethods {
       var jsonList = postData.docs;
       for (var json in jsonList) {
         Post post = Post.fromSnap(json);
+
+        QuerySnapshot snap = await FirebaseFirestore.instance
+            .collection('posts')
+            .doc(post.postId)
+            .collection('comments')
+            .get();
+        for (var commentSnap in snap.docs) {
+          Comment comment = Comment.fromSnap(commentSnap);
+          post.comments.add(comment);
+        }
+
         _postList.add(post);
       }
       return _postList;

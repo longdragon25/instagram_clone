@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/comment.dart';
 import 'package:intl/intl.dart';
 
 class CommentCard extends StatelessWidget {
-  final snap;
-  const CommentCard({Key? key, required this.snap}) : super(key: key);
+  Comment comment;
+  CommentCard({Key? key, required this.comment}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class CommentCard extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(snap['profilePic']),
+              backgroundImage: NetworkImage(comment.profilePic),
             ),
             Expanded(
                 child: Padding(
@@ -25,16 +26,16 @@ class CommentCard extends StatelessWidget {
                   RichText(
                       text: TextSpan(children: [
                     TextSpan(
-                        text: snap['name'],
+                        text: comment.name,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         )),
-                    TextSpan(text: '  ${snap['text']}'),
+                    TextSpan(text: '  ${comment.text}'),
                   ])),
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      DateFormat.yMMMd().format(snap['datePublished'].toDate()),
+                      DateFormat.yMMMd().format(comment.datePublished.toDate()),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,

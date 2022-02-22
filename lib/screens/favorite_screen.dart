@@ -34,36 +34,6 @@ class FavoriteScreen extends StatelessWidget {
               post: data,
             );
           },
-        )
-        // body: StreamBuilder(
-        //   stream: FirebaseFirestore.instance
-        //       .collection('posts')
-        //       .where('likes',
-        //           arrayContains: FirebaseAuth.instance.currentUser!.uid)
-        //       .snapshots(),
-        //   builder: (context,
-        //       AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-        //     if (snapshot.connectionState == ConnectionState.waiting) {
-        //       return const Center(
-        //         child: CircularProgressIndicator(),
-        //       );
-        //     }
-        //     if (snapshot.hasData) {
-        //       return ListView.builder(
-        //         itemCount: (snapshot.data! as dynamic).docs.length,
-        //         itemBuilder: (context, index) {
-        //           var data = (snapshot.data! as dynamic).docs[index];
-        //           return FavoriteCard(
-        //             snap: data,
-        //           );
-        //         },
-        //       );
-        //     }
-        //     return const Center(
-        //       child: CircularProgressIndicator(),
-        //     );
-        //   },
-        // ),
-        );
+        ));
   }
 }

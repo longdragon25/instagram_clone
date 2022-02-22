@@ -22,7 +22,6 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
-  // int commentlen = widget.post.likes.length;
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +236,7 @@ class _PostCardState extends State<PostCard> {
                 InkWell(
                     child: Container(
                       child: Text(
-                        'View ${widget.post.likes.length} comments',
+                        'View ${widget.post.comments.length} comments',
                         style: const TextStyle(
                           fontSize: 16,
                           color: secondaryColor,

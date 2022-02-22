@@ -36,4 +36,10 @@ class PostProvider with ChangeNotifier {
         .uploadPost(description, file, uid, username, profImage);
     await getPost();
   }
+
+  Future<void> postComment(String postId, String text, String uid, String name,
+      String profilePic) async {
+    await FirestoreMethods().postComment(postId, text, uid, name, profilePic);
+    await getPost();
+  }
 }

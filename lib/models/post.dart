@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instagram_clone/models/comment.dart';
 
 class Post {
   final String description;
@@ -9,8 +10,9 @@ class Post {
   final datePublished;
   final String postUrl;
   final String profImage;
+  final List<Comment> comments = [];
 
-  const Post({
+  Post({
     required this.description,
     required this.uid,
     required this.username,
