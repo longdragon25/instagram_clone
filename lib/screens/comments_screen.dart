@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/comment.dart';
+import 'package:instagram_clone/models/post.dart';
 import 'package:instagram_clone/models/user.dart';
+import 'package:instagram_clone/providers/post_provider.dart';
 import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/resources/firestore_methods.dart';
 import 'package:instagram_clone/utils/colors.dart';
@@ -19,30 +22,6 @@ class CommentsScreen extends StatefulWidget {
 class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentEdittingController = TextEditingController();
 
-  void postComment(String uid, String name, String profilePic) async {
-    try {
-      String res = await FirestoreMethods().postComment(
-        widget.postId,
-        commentEdittingController.text,
-        uid,
-        name,
-        profilePic,
-      );
-
-      if (res != 'success') {
-        showSnackBar(context, res);
-      }
-      setState(() {
-        commentEdittingController.text = "";
-      });
-    } catch (err) {
-      showSnackBar(
-        context,
-        err.toString(),
-      );
-    }
-  }
-
   @override
   void dispose() {
     // TODO: implement dispose
@@ -52,7 +31,21 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context).getUser;
+    User user = Provider.of<UserProvider>(context).getUser;
+    List<Post> postList = Provider.of<PostProvider>(context).getListPost;
+    Post? post;
+    for (var item in postList) {
+      if (item.postId == widget.postId) {
+        post = item;
+      }
+    }
+
+    List<Comment> commentList = post!.comments;
+    commentList.sort((a, b) {
+      var adate = a.datePublished;
+      var bdate = b.datePublished;
+      return bdate.compareTo(adate);
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -60,28 +53,34 @@ class _CommentsScreenState extends State<CommentsScreen> {
         title: const Text('Comments'),
         centerTitle: false,
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('posts')
-            .doc(widget.postId)
-            .collection('comments')
-            .orderBy('datePublished', descending: true)
-            .snapshots(),
-        builder: (context,
-            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              return CommentCard(snap: snapshot.data!.docs[index]);
-            },
-          );
+      body: ListView.builder(
+        itemCount: post.comments.length,
+        itemBuilder: (context, index) {
+          return CommentCard(comment: post!.comments[index]);
         },
       ),
+      // StreamBuilder(
+      //   stream: FirebaseFirestore.instance
+      //       .collection('posts')
+      //       .doc(widget.postId)
+      //       .collection('comments')
+      //       .orderBy('datePublished', descending: true)
+      //       .snapshots(),
+      //   builder: (context,
+      //       AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return const Center(
+      //         child: CircularProgressIndicator(),
+      //       );
+      //     }
+      //     return ListView.builder(
+      //       itemCount: snapshot.data!.docs.length,
+      //       itemBuilder: (context, index) {
+      //         return CommentCard(snap: snapshot.data!.docs[index]);
+      //       },
+      //     );
+      //   },
+      // ),
       bottomNavigationBar: SafeArea(
         child: Container(
           height: kToolbarHeight,
@@ -105,8 +104,17 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 ),
               )),
               InkWell(
-                onTap: () =>
-                    postComment(user.uid, user.username, user.photoUrl),
+                onTap: () {
+                  Provider.of<PostProvider>(context, listen: false).postComment(
+                      widget.postId,
+                      commentEdittingController.text,
+                      user.uid,
+                      user.username,
+                      user.photoUrl);
+                  setState(() {
+                    commentEdittingController.text = "";
+                  });
+                },
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Text(
