@@ -27,7 +27,6 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   void initState() {
     super.initState();
     pageController = PageController();
-    log('MobileScreenLayout');
   }
 
   @override

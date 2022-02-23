@@ -17,15 +17,12 @@ class FeedScreen extends StatefulWidget {
   State<FeedScreen> createState() => _FeedScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> {
-  bool isLoading = false;
+class _FeedScreenState extends State<FeedScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {
-      isLoading = true;
-    });
     addData();
   }
 
@@ -33,13 +30,11 @@ class _FeedScreenState extends State<FeedScreen> {
     PostProvider _postProvider =
         Provider.of<PostProvider>(context, listen: false);
     await _postProvider.getPost();
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final width = MediaQuery.of(context).size.width;
     PostProvider postProvider = Provider.of<PostProvider>(context);
     return Scaffold(
@@ -67,32 +62,6 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
               ],
             ),
-      // body: StreamBuilder(
-      //   stream: FirebaseFirestore.instance
-      //       .collection('posts')
-      //       .orderBy('datePublished', descending: true)
-      //       .snapshots(),
-      //   builder: (context,
-      //       AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return const Center(
-      //         child: CircularProgressIndicator(),
-      //       );
-      //     }
-      //     return ListView.builder(
-      //       itemCount: snapshot.data!.docs.length,
-      //       itemBuilder: (ctx, index) => Container(
-      //         margin: EdgeInsets.symmetric(
-      //           horizontal: width > webScreenSize ? width * 0.3 : 0,
-      //           vertical: width > webScreenSize ? 15 : 0,
-      //         ),
-      //         child: PostCard(
-      //           snap: snapshot.data!.docs[index].data(),
-      //         ),
-      //       ),
-      //     );
-      //   },
-      // ),
       body: ListView.builder(
         itemCount: postProvider.getListPost.length,
         itemBuilder: (context, index) {
@@ -101,4 +70,8 @@ class _FeedScreenState extends State<FeedScreen> {
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

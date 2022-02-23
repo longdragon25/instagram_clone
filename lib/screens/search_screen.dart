@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:instagram_clone/models/post.dart';
+import 'package:instagram_clone/models/user.dart';
 import 'package:instagram_clone/providers/post_provider.dart';
 import 'package:instagram_clone/screens/profile_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
@@ -16,22 +17,10 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen>
+    with AutomaticKeepAliveClientMixin {
   TextEditingController _textSearch = TextEditingController();
   bool isShowUsers = false;
-
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   addData();
-  // }
-
-  // addData() async {
-  //   PostProvider _postProvider =
-  //       Provider.of<PostProvider>(context, listen: false);
-  //   await _postProvider.getPost();
-  // }
 
   @override
   void dispose() {
@@ -42,6 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     List<Post> listPost = Provider.of<PostProvider>(context).getListPost;
 
     return Scaffold(
@@ -56,12 +46,23 @@ class _SearchScreenState extends State<SearchScreen> {
               });
             },
           ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  _textSearch.clear();
+                  FocusScope.of(context).unfocus();
+                  setState(() {
+                    isShowUsers = false;
+                  });
+                },
+                icon: const Icon(Icons.close_sharp))
+          ],
         ),
         body: isShowUsers
             ? FutureBuilder(
                 future: FirebaseFirestore.instance
                     .collection('users')
-                    .where('username', isGreaterThanOrEqualTo: _textSearch.text)
+                    .where('username', isGreaterThan: _textSearch.text)
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -116,39 +117,10 @@ class _SearchScreenState extends State<SearchScreen> {
                             (index % 7 == 0) ? 2 : 1, (index % 7 == 0) ? 2 : 1),
                 mainAxisSpacing: 8.0,
                 crossAxisSpacing: 8.0,
-              )
-        // : FutureBuilder(
-        //     future: FirebaseFirestore.instance
-        //         .collection('posts')
-        //         .orderBy('datePublished')
-        //         .get(),
-        //     builder: (context, snapshot) {
-        //       if (!snapshot.hasData) {
-        //         return const Center(
-        //           child: CircularProgressIndicator(),
-        //         );
-        //       }
-
-        //       return StaggeredGridView.countBuilder(
-        //         crossAxisCount: 3,
-        //         itemCount: (snapshot.data! as dynamic).docs.length,
-        //         itemBuilder: (context, index) => Image.network(
-        //           (snapshot.data! as dynamic).docs[index]['postUrl'],
-        //           fit: BoxFit.cover,
-        //         ),
-        //         staggeredTileBuilder: (index) => MediaQuery.of(context)
-        //                     .size
-        //                     .width >
-        //                 webScreenSize
-        //             ? StaggeredTile.count(
-        //                 (index % 7 == 0) ? 1 : 1, (index % 7 == 0) ? 1 : 1)
-        //             : StaggeredTile.count(
-        //                 (index % 7 == 0) ? 2 : 1, (index % 7 == 0) ? 2 : 1),
-        //         mainAxisSpacing: 8.0,
-        //         crossAxisSpacing: 8.0,
-        //       );
-        //     },
-        //   ),
-        );
+              ));
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

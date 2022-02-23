@@ -20,24 +20,19 @@ class ResponsiveLayout extends StatefulWidget {
 }
 
 class _ResponsiveLayoutState extends State<ResponsiveLayout> {
-  bool isLoading = false;
+  bool isLoading = true;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {
-      isLoading = true;
-    });
     addData();
   }
 
   addData() async {
     UserProvider _userProvider =
         Provider.of<UserProvider>(context, listen: false);
-    log('Responsive screen');
     await _userProvider.refreshUser();
-    // log('refresh user');
-    // log('username: ${FirebaseAuth.instance.currentUser!.email}');
+    if (!mounted) return;
     setState(() {
       isLoading = false;
     });
