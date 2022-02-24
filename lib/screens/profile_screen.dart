@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/post.dart';
+import 'package:instagram_clone/providers/post_provider.dart';
 import 'package:instagram_clone/resources/auth_methods.dart';
 import 'package:instagram_clone/resources/firestore_methods.dart';
 import 'package:instagram_clone/screens/login_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/follow_button.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
@@ -41,12 +44,6 @@ class _ProfileScreenState extends State<ProfileScreen>
           .doc(widget.uid)
           .get();
 
-      var postSnap = await FirebaseFirestore.instance
-          .collection('posts')
-          .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-          .get();
-
-      postLen = postSnap.docs.length;
       userData = userSnap.data()!;
       followers = userSnap.data()!['followers'].length;
       following = userSnap.data()!['following'].length;
@@ -67,6 +64,10 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    List<Post> listPost = Provider.of<PostProvider>(context).getListPost;
+    List<Post> listPostProfile =
+        listPost.where((post) => post.uid == widget.uid).toList();
     return isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -99,7 +100,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    buildStatColumn(postLen, "posts"),
+                                    buildStatColumn(
+                                        listPostProfile.length, "posts"),
                                     buildStatColumn(followers, "followers"),
                                     buildStatColumn(following, "following"),
                                   ],
@@ -200,42 +202,61 @@ class _ProfileScreenState extends State<ProfileScreen>
                 const Divider(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: FutureBuilder(
-                    future: FirebaseFirestore.instance
-                        .collection('posts')
-                        .where('uid', isEqualTo: widget.uid)
-                        .get(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        itemCount: (snapshot.data! as dynamic).docs.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 5,
-                          mainAxisSpacing: 1.5,
-                          childAspectRatio: 1,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    itemCount: listPostProfile.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 1.5,
+                      childAspectRatio: 1,
+                    ),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        child: Image(
+                          image: NetworkImage(listPostProfile[index].postUrl),
+                          fit: BoxFit.cover,
                         ),
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot snap =
-                              (snapshot.data! as dynamic).docs[index];
-
-                          return Container(
-                            child: Image(
-                              image: NetworkImage(snap['postUrl']),
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        },
                       );
                     },
                   ),
+                  // child: FutureBuilder(
+                  //   future: FirebaseFirestore.instance
+                  //       .collection('posts')
+                  //       .where('uid', isEqualTo: widget.uid)
+                  //       .get(),
+                  //   builder: (context, snapshot) {
+                  //     if (snapshot.connectionState == ConnectionState.waiting) {
+                  //       return const Center(
+                  //         child: CircularProgressIndicator(),
+                  //       );
+                  //     }
+
+                  //     return GridView.builder(
+                  //       shrinkWrap: true,
+                  //       itemCount: (snapshot.data! as dynamic).docs.length,
+                  //       gridDelegate:
+                  //           const SliverGridDelegateWithFixedCrossAxisCount(
+                  //         crossAxisCount: 3,
+                  //         crossAxisSpacing: 5,
+                  //         mainAxisSpacing: 1.5,
+                  //         childAspectRatio: 1,
+                  //       ),
+                  //       itemBuilder: (context, index) {
+                  //         DocumentSnapshot snap =
+                  //             (snapshot.data! as dynamic).docs[index];
+
+                  //         return Container(
+                  //           child: Image(
+                  //             image: NetworkImage(snap['postUrl']),
+                  //             fit: BoxFit.cover,
+                  //           ),
+                  //         );
+                  //       },
+                  //     );
+                  //   },
+                  // ),
                 )
               ],
             ),

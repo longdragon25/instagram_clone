@@ -22,26 +22,32 @@ class AuthMethods {
       required String password,
       required String username,
       required String bio,
-      required Uint8List file}) async {
+      Uint8List? file}) async {
     String res = 'Some error occured';
     try {
       if (email.isNotEmpty ||
           password.isNotEmpty ||
           username.isNotEmpty ||
-          bio.isNotEmpty ||
-          file != null) {
+          bio.isNotEmpty) {
         // register user
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
         print(cred.user!.uid);
 
-        String photoUrl = await StorageMethods()
-            .uploadImageToStorage("profilePics", file, false);
+        String avatarDefault =
+            'https://banner2.cleanpng.com/20180623/iqh/kisspng-computer-icons-avatar-social-media-blog-font-aweso-avatar-icon-5b2e99c40ce333.6524068515297806760528.jpg';
+
+        String photoUrl = '';
+
+        if (file != null) {
+          photoUrl = await StorageMethods()
+              .uploadImageToStorage("profilePics", file, false);
+        }
 
         model.User user = model.User(
           username: username,
           uid: cred.user!.uid,
-          photoUrl: photoUrl,
+          photoUrl: file != null ? photoUrl : avatarDefault,
           email: email,
           bio: bio,
           followers: [],
@@ -52,7 +58,7 @@ class AuthMethods {
             .collection('users')
             .doc(cred.user!.uid)
             .set(user.toJson());
-        res = 'succes';
+        res = 'success';
       }
     } on FirebaseAuthException catch (err) {
       if (err.code == 'invalid-email') {
