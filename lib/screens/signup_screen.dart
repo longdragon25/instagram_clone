@@ -50,14 +50,23 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       _isLoading = true;
     });
+    String res = '';
+    if (_image != null) {
+      res = await AuthMethods().signUpUser(
+          email: _emailEditingController.text,
+          password: _passwordEditingController.text,
+          username: _userNameEditingController.text,
+          bio: _bioEditingController.text,
+          file: _image!);
+    } else {
+      res = await AuthMethods().signUpUser(
+          email: _emailEditingController.text,
+          password: _passwordEditingController.text,
+          username: _userNameEditingController.text,
+          bio: _bioEditingController.text);
+    }
 
-    String res = await AuthMethods().signUpUser(
-        email: _emailEditingController.text,
-        password: _passwordEditingController.text,
-        username: _userNameEditingController.text,
-        bio: _bioEditingController.text,
-        file: _image!);
-    if (res == "succes") {
+    if (res == "success") {
       setState(() {
         _isLoading = false;
       });
